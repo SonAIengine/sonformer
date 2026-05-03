@@ -20,6 +20,7 @@
 | `sonlm/` | ❌ **절대 금지** | vanilla decoder-only LM (한국어 학습 주석). "교과서" 역할로 박제. |
 | `experiments/00-baseline/` | ❌ **절대 금지** | 모든 ablation의 비교 기준점. 첫 측정 후 봉인. |
 | `experiments/<NN-name>/` | ✅ 자유 | 각 ablation 실험 폴더. 새로 만들거나 결과 채우기. |
+| `practice/<topic>/` | ⚠️ **사용자만** | 사용자가 직접 손코딩하는 학습 공간. **Claude는 코드를 채워주지 말 것** — 가이드/힌트/디버깅만. |
 | `shared/` | ✅ 신중하게 | 모든 실험이 공유하는 인프라. 변경 시 모든 실험에 영향. |
 | `README.md`, `experiments/README.md` | ✅ | 새 ablation 결과 표 갱신 |
 | `CLAUDE.md` (이 파일) | ✅ | 협업 방식 합의 변경 시 업데이트 |
@@ -40,6 +41,7 @@
 | "**한국어 데이터로 돌려보고싶어**" | Phase 8 항목, `08a-korean-data/` |
 | "**왜 PPL 차이가 이렇게 나?**" | 분석 (loss curve, attention map 등) |
 | "**이 논문 한 번 따라가보자**" | 논문 → ablation 폴더 매핑 후 진행 |
+| "**X 직접 손코딩해보고 싶어**" | `practice/<topic>/` 가이드 작성 — **단, 코드는 사용자가 직접**. Claude는 README와 힌트만 제공하고 사용자가 막히면 디버깅 조력. |
 
 핵심: **답을 한 번에 던지지 않는다.** 단계 나눠서, "왜 그렇게 하는지"를 설명하면서 같이 코드 작성.
 
@@ -113,6 +115,8 @@ sonformer/
 │   ├── 00-baseline/             ❌ frozen 기준점 (PPL 37.47 on Shakespeare)
 │   └── 02a-rope/                ✅ 첫 ablation (PPL 28.47 on Shakespeare)
 ├── data/                      📦 다운로드 캐시 (.gitignore, 토크나이저는 commit)
+├── practice/                  🖐️ 사용자 손코딩 공간 (Claude는 가이드만, 코드는 채우지 말 것)
+│   └── sonlm-from-scratch/      vanilla transformer 빈 폴더에서부터 직접 구현
 └── tools/
     ├── new_experiment.sh        새 ablation 폴더 스폰
     └── compare.py               여러 실험 결과 비교 표 출력

@@ -1,0 +1,50 @@
+# 00-baseline config
+# All ablations should change ONLY the architectural component being tested.
+# Training schedule, data, eval — must stay identical for fair comparison.
+
+experiment:
+  name: "00-baseline"
+  description: "Vanilla decoder-only transformer (frozen reference)"
+
+data:
+  dataset: "tinystories"        # shakespeare(빠름) | tinystories(메인) | wikitext-103
+  vocab_size: 4096
+  max_train_samples: null       # null = 전체. 디버깅 시 1000 같은 작은 수
+  max_eval_samples: 2000
+
+model:
+  max_seq_len: 512
+  d_model: 384
+  n_layers: 6
+  n_heads: 6
+  ffn_hidden: 1536              # 4× d_model
+  dropout: 0.1
+
+train:
+  batch_size: 32
+  learning_rate: 3.0e-4
+  min_lr: 3.0e-5
+  weight_decay: 0.1
+  betas: [0.9, 0.95]
+  warmup_steps: 200
+  max_steps: 5000
+  eval_interval: 500
+  log_interval: 50
+  grad_clip: 1.0
+  device: "auto"
+  seed: 42
+  use_amp: true                 # CUDA에서만 적용
+
+generation:
+  prompts:
+    - "Once upon a time"
+    - "The little girl"
+    - "In a faraway"
+  max_new_tokens: 64
+  temperature: 0.7
+  top_k: 50
+
+extrapolation:
+  # PE ablation의 핵심 metric — 학습 길이를 넘는 시퀀스에서 PPL
+  enabled: false                # baseline은 외삽 자체가 안 됨 (max_seq_len 제한). RoPE 실험에서 enable.
+  seq_lens: [256, 512, 1024, 2048]

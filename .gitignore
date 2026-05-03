@@ -53,3 +53,10 @@ Desktop.ini
 *.log
 *.tmp
 *.bak
+
+# ── sonformer experiment kit ────────────────────────────────
+# results are generated, not source-controlled
+experiments/*/results/*
+!experiments/*/results/.gitkeep
+# wandb runs
+wandb/

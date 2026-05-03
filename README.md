@@ -8,6 +8,30 @@
 
 ---
 
+## 프로젝트 구조
+
+```
+sonformer/
+├── guppylm/              ⭐ FROZEN baseline — 한국어 주석 잔뜩, "교과서" 역할
+├── shared/               공통 인프라 (실험 간 공유)
+│   ├── datasets.py         load_dataset("tinystories"), ("shakespeare"), ...
+│   ├── tokenizers.py       BPE 학습/로드 (실험 간 동일 토크나이저 강제)
+│   ├── eval.py             perplexity, extrapolation_perplexity, generate_samples
+│   └── logging.py          CSV / wandb 로거
+├── data/                 다운로드된 데이터 캐시 (.gitignore)
+├── experiments/          ⭐ ablation kit — 여기에 작업 누적
+│   ├── 00-baseline/        vanilla 기준점 (frozen)
+│   ├── 02a-rope/           Learned PE → RoPE
+│   └── README.md           실험 인덱스
+└── docs/, tools/, ...    원본 유산 (export_onnx 등)
+```
+
+각 실험은 **자기완결**이라서 폴더 하나만 보면 무엇을 했는지/어떤 결과인지 완전히 파악 가능. `bash run.sh` 한 줄로 어디서든 (Colab/local/Lambda) 동일한 결과를 재현.
+
+상세 사용법: [experiments/README.md](experiments/README.md)
+
+---
+
 ## 학습 커리큘럼
 
 코드를 읽는 권장 순서. "데이터가 어떻게 흘러가는지" 따라가는 방향으로 작은 것부터 큰 것 순서.

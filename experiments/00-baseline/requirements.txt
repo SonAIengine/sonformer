@@ -1,0 +1,7 @@
+torch>=2.1
+tokenizers>=0.15
+PyYAML>=6.0
+datasets>=2.14   # for tinystories / wikitext / pg19 loaders
+numpy
+# Optional:
+# wandb            # uncomment if SONFORMER_WANDB=1

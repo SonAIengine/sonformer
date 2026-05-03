@@ -20,7 +20,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable, List, Optional
 
-from tokenizers import Tokenizer
+from tokenizers import Tokenizer, decoders
 from tokenizers.models import BPE
 from tokenizers.pre_tokenizers import ByteLevel
 from tokenizers.trainers import BpeTrainer
@@ -75,6 +75,8 @@ def _train_bpe(corpus: Iterable[str], vocab_size: int) -> Tokenizer:
     """BPE 학습 (byte-level, GPT-2 스타일)."""
     tokenizer = Tokenizer(BPE(unk_token=None))
     tokenizer.pre_tokenizer = ByteLevel(add_prefix_space=False)
+    # Ġ/Ċ 같은 byte-level marker를 사람이 읽는 문자로 되돌리는 decoder
+    tokenizer.decoder = decoders.ByteLevel()
 
     trainer = BpeTrainer(
         vocab_size=vocab_size,

@@ -12,14 +12,16 @@
 
 ## 실험 인덱스
 
-| 폴더 | 변경 | 상태 | 핵심 metric |
-|---|---|---|---|
-| [00-baseline](00-baseline/) | (none — 기준점) | 🟡 ready, 미실행 | eval PPL |
-| [02a-rope](02a-rope/) | Learned PE → RoPE | 🟡 ready, 미실행 | extrapolation PPL @ 1k/2k |
-| _02b-swiglu_ | ReLU FFN → SwiGLU | ⚪ TODO | eval PPL, params |
-| _02c-rmsnorm_ | LayerNorm → RMSNorm | ⚪ TODO | eval PPL, wallclock |
-| _02d-gqa_ | MHA → GQA | ⚪ TODO | wallclock, VRAM |
-| _02e-flashattn_ | naive → SDPA / Flash | ⚪ TODO | wallclock, VRAM |
+| 폴더 | 변경 | 데이터 | Eval PPL | 상태 |
+|---|---|---|---|---|
+| [00-baseline](00-baseline/) | (none — 기준점) | Shakespeare | **37.47** | ✅ 완료 |
+| [02a-rope](02a-rope/) | Learned PE → RoPE | Shakespeare | **28.47** (-24%) | ✅ 완료 |
+| _02b-swiglu_ | ReLU FFN → SwiGLU | _ | _ | ⚪ TODO |
+| _02c-rmsnorm_ | LayerNorm → RMSNorm | _ | _ | ⚪ TODO |
+| _02d-gqa_ | MHA → GQA | _ | _ | ⚪ TODO |
+| _02e-flashattn_ | naive → SDPA / Flash | _ | _ | ⚪ TODO |
+
+> **첫 round (Shakespeare, sanity check)**: 파이프라인 검증용. 본격 ablation은 **TinyStories**로 다시 돌릴 예정 (외삽 평가까지 포함).
 
 (상세 로드맵은 루트의 [../README.md](../README.md) 참조)
 

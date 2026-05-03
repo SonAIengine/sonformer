@@ -1,0 +1,15 @@
+=== sample 0 ===
+prompt:    'ROMEO:'
+generated: "\nO! I sawlt thou ask not!\nMarry, that'st thou body sinair, best of yours!\nDoever, bo! thou, withst thou not thou?\nWhen I beated it thou, I'll bel; thou didst thee to-in;\nOr, and me"
+tok/s:     133.9
+
+=== sample 1 ===
+prompt:    'To be, or not to be,'
+generated: " heir; forken, wherefore the villain!\nWhat is yours? Cours shall die?\nThat we had so be gone!'Tis the first fieve? You are they say\nSo, so, but I am turn you to them.\nAnd fiewere not the bold in a mutions,\n"
+tok/s:     621.3
+
+=== sample 2 ===
+prompt:    'What is '
+generated: "Keepeper:\nHow, O, Sorrus?' the justed Kinger of his cristi',\nAnd yet I, and you,\nOf that cause to-t the seatured. Well you,\nHath thou bade in the lady,\nThe gild: we were the"
+tok/s:     629.5
+

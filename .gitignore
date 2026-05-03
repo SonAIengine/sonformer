@@ -55,8 +55,7 @@ Desktop.ini
 *.bak
 
 # ── sonformer experiment kit ────────────────────────────────
-# results are generated, not source-controlled
-experiments/*/results/*
-!experiments/*/results/.gitkeep
+# 작은 텍스트 결과(eval.json, samples.txt, train_log.csv 등)는 commit해서
+# README의 표를 검증/재현 가능하게 함. 큰 체크포인트는 *.pt 룰로 자동 제외.
 # wandb runs
 wandb/

@@ -7,20 +7,20 @@ experiment:
   description: "Replace learned PE with RoPE (split-half rotation, LLaMA convention)"
 
 data:
-  dataset: "tinystories"
-  vocab_size: 4096
+  dataset: "shakespeare"
+  vocab_size: 1024
   max_train_samples: null
-  max_eval_samples: 2000
+  max_eval_samples: 200
 
 model:
-  max_seq_len: 512
-  d_model: 384
-  n_layers: 6
-  n_heads: 6
-  ffn_hidden: 1536
+  max_seq_len: 256
+  d_model: 256
+  n_layers: 4
+  n_heads: 4
+  ffn_hidden: 1024
   dropout: 0.1
   rope_base: 10000.0
-  rope_cache_len: 8192          # pre-computed cos/sin length (covers 16× max_seq_len)
+  rope_cache_len: 4096          # 16× max_seq_len 정도로 — 외삽 평가에 사용
 
 train:
   batch_size: 32
@@ -28,9 +28,9 @@ train:
   min_lr: 3.0e-5
   weight_decay: 0.1
   betas: [0.9, 0.95]
-  warmup_steps: 200
-  max_steps: 5000
-  eval_interval: 500
+  warmup_steps: 100
+  max_steps: 1500
+  eval_interval: 200
   log_interval: 50
   grad_clip: 1.0
   device: "auto"
@@ -39,13 +39,13 @@ train:
 
 generation:
   prompts:
-    - "Once upon a time"
-    - "The little girl"
-    - "In a faraway"
-  max_new_tokens: 64
-  temperature: 0.7
+    - "ROMEO:"
+    - "To be, or not to be,"
+    - "What is "
+  max_new_tokens: 80
+  temperature: 0.8
   top_k: 50
 
 extrapolation:
   enabled: true                 # ← RoPE의 핵심 장점 검증
-  seq_lens: [256, 512, 1024, 2048]
+  seq_lens: [128, 256, 512, 1024, 2048]

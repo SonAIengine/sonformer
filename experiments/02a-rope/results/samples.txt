@@ -1,0 +1,15 @@
+=== sample 0 ===
+prompt:    'ROMEO:'
+generated: "\nIf he should be, sir, and I'll short me me.\nHe would I, how he is a match. What is the piece?\nSarry, do me to the fight of thy grace\nShould be chaceeded, to think my lady,--'\nHave not this bold false. "
+tok/s:     131.0
+
+=== sample 1 ===
+prompt:    'To be, or not to be,'
+generated: "\nMepow far-formed. What's the dear? Hetter sick.\nAnd every hell? I be so, in thy name?\nBethind, brighting, since, I'll have yours injuried.\nNow, is the deating sorrow and faults be m"
+tok/s:     487.6
+
+=== sample 2 ===
+prompt:    'What is '
+generated: "Kom?\nWhere is the duke's because? what wilt thou?\nYour draw, by the trumpet of a mind of drum.\nWill me he must live. We speak as welcome,\nI will keep him? Dior me to herself\nTo general thy mother, and"
+tok/s:     461.6
+

@@ -1,0 +1,39 @@
+{
+  "final": {
+    "loss": 3.3489023494185375,
+    "ppl": 28.471464765900404,
+    "n_tokens": 10872,
+    "n_batches": 7
+  },
+  "extrapolation": {
+    "128": {
+      "loss": 3.6169486804441973,
+      "ppl": 37.22381261120213,
+      "n_samples": 22
+    },
+    "256": {
+      "loss": 3.8386577367782593,
+      "ppl": 46.463066899617424,
+      "n_samples": 4
+    },
+    "512": {
+      "loss": NaN,
+      "ppl": NaN,
+      "n_samples": 0
+    },
+    "1024": {
+      "loss": NaN,
+      "ppl": NaN,
+      "n_samples": 0
+    },
+    "2048": {
+      "loss": NaN,
+      "ppl": NaN,
+      "n_samples": 0
+    }
+  },
+  "best_eval_loss": 3.3503547486485235,
+  "n_params": 3421696,
+  "total_steps": 1500,
+  "wallclock_s": 19.583359956741333
+}

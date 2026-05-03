@@ -7,17 +7,17 @@ experiment:
   description: "Vanilla decoder-only transformer (frozen reference)"
 
 data:
-  dataset: "tinystories"        # shakespeare(빠름) | tinystories(메인) | wikitext-103
-  vocab_size: 4096
-  max_train_samples: null       # null = 전체. 디버깅 시 1000 같은 작은 수
-  max_eval_samples: 2000
+  dataset: "shakespeare"        # 첫 sanity run: shakespeare(1MB, 빠름). 본격 비교는 tinystories로.
+  vocab_size: 1024              # shakespeare용 (어휘 작음). tinystories면 4096 권장.
+  max_train_samples: null
+  max_eval_samples: 200
 
 model:
-  max_seq_len: 512
-  d_model: 384
-  n_layers: 6
-  n_heads: 6
-  ffn_hidden: 1536              # 4× d_model
+  max_seq_len: 256              # shakespeare chunk가 짧음. tinystories면 512.
+  d_model: 256
+  n_layers: 4
+  n_heads: 4
+  ffn_hidden: 1024              # 4× d_model
   dropout: 0.1
 
 train:
@@ -26,9 +26,9 @@ train:
   min_lr: 3.0e-5
   weight_decay: 0.1
   betas: [0.9, 0.95]
-  warmup_steps: 200
-  max_steps: 5000
-  eval_interval: 500
+  warmup_steps: 100
+  max_steps: 1500
+  eval_interval: 200
   log_interval: 50
   grad_clip: 1.0
   device: "auto"
@@ -37,11 +37,11 @@ train:
 
 generation:
   prompts:
-    - "Once upon a time"
-    - "The little girl"
-    - "In a faraway"
-  max_new_tokens: 64
-  temperature: 0.7
+    - "ROMEO:"
+    - "To be, or not to be,"
+    - "What is "
+  max_new_tokens: 80
+  temperature: 0.8
   top_k: 50
 
 extrapolation:

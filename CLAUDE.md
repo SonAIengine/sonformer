@@ -20,7 +20,7 @@
 | `sonlm/` | ❌ **절대 금지** | vanilla decoder-only LM (한국어 학습 주석). "교과서" 역할로 박제. |
 | `experiments/00-baseline/` | ❌ **절대 금지** | 모든 ablation의 비교 기준점. 첫 측정 후 봉인. |
 | `experiments/<NN-name>/` | ✅ 자유 | 각 ablation 실험 폴더. 새로 만들거나 결과 채우기. |
-| `practice/<topic>/` | ⚠️ **사용자만** | 사용자가 직접 손코딩하는 학습 공간. **Claude는 코드를 채워주지 말 것** — 가이드/힌트/디버깅만. |
+| `practice/<topic>/` | ⚠️ **사용자만** | 사용자가 직접 손코딩하는 학습 공간. **Claude는 새 코드를 채워주지 말 것** — 가이드/힌트/디버깅만. 단, 사용자가 명시적으로 요청한 정답지(`solution.py` 등)는 예외로 한 번 작성 후 frozen. |
 | `shared/` | ✅ 신중하게 | 모든 실험이 공유하는 인프라. 변경 시 모든 실험에 영향. |
 | `README.md`, `experiments/README.md` | ✅ | 새 ablation 결과 표 갱신 |
 | `CLAUDE.md` (이 파일) | ✅ | 협업 방식 합의 변경 시 업데이트 |

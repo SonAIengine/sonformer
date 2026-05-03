@@ -1,7 +1,8 @@
 # sonlm 손코딩 (from scratch)
 
 > Vanilla decoder-only transformer를 **빈 폴더에서부터** 직접 손으로 구현하는 작업 공간.
-> 막히면 `../../sonlm/`이 정답지 — 단, 가능하면 끝까지 안 보고 만들어보기.
+> 막히면 `solution.py` (단일 파일 정답지) 또는 `../../sonlm/` (모듈 분리 정답지)를 비교.
+> 단, 가능하면 끝까지 안 보고 만들어보기.
 
 ---
 
@@ -11,21 +12,36 @@
 
 ```
 practice/sonlm-from-scratch/
-├── config.py        ← 하이퍼파라미터 dataclass
-├── model.py         ← Attention / FFN / Block / SonLM
-├── dataset.py       ← JSONL 로드 + (x, y) shift + padding
-├── train.py         ← optimizer + LR schedule + 학습 루프
-└── inference.py     ← (옵션) chat 루프
+├── README.md        ← (이 파일) 단계별 가이드
+├── solution.py      ← 정답지 — 모든 걸 한 파일에 담은 nanoGPT 스타일 reference
+│
+├── config.py        ← 하이퍼파라미터 dataclass         (본인이 작성)
+├── model.py         ← Attention / FFN / Block / SonLM (본인이 작성)
+├── dataset.py       ← JSONL 로드 + (x, y) shift       (본인이 작성)
+├── train.py         ← optimizer + LR schedule + 루프  (본인이 작성)
+└── inference.py     ← (옵션) chat 루프                 (본인이 작성)
 ```
 
 완성 후 `python -c "from model import SonLM; ..."` 로 forward가 도는 게 검증 끝.
 
 ---
 
+## 정답지 두 가지
+
+| 정답지 | 스타일 | 언제 보면 좋은가 |
+|---|---|---|
+| **`solution.py`** (이 폴더) | 단일 파일, 개발자스러운 압축 (nanoGPT 풍) | 큰 그림 한 번에 보고 싶을 때, 학습 루프까지 한 흐름으로 따라가고 싶을 때 |
+| **`../../sonlm/`** | 파일 분리 + 한국어 주석 풍부 | 특정 컴포넌트 (`model.py`만, `dataset.py`만)에서 막혔을 때 |
+
+`solution.py`는 그 자체로 동작하는 reference: `python solution.py` 실행 시 random
+데이터로 smoke test (~0.5초). 실제 데이터로 학습하려면 `python solution.py train ...`.
+
+---
+
 ## 학습 방식
 
 1. **순서대로 한 파일씩** 구현. 한 파일 끝나면 작은 import 테스트로 동작 확인.
-2. **막히면 단계별 hint를 먼저 본다.** 그래도 안 되면 `sonlm/<같은이름>.py`를 펴서 비교.
+2. **막히면 단계별 hint를 먼저 본다.** 그래도 안 되면 정답지 비교.
 3. **베끼지 않는다.** 정답 코드를 보더라도 닫고 다시 직접 친다 — 손에 새기는 게 목적.
 4. **각 Phase 끝나면 commit.** 진행 흔적이 남으면 어디서 막혔는지 나중에 보임.
 
@@ -278,8 +294,11 @@ else: progress = (step - warmup) / (max_steps - warmup)
 # 막힐 때 어떻게 도움 받기
 
 1. **먼저 30분 직접 시도** — 답답한 만큼 손에 새겨짐.
-2. 30분 넘게 막히면 같은 파일의 `sonlm/<이름>.py`를 펴서 **막힌 부분만** 본다.
-3. 그래도 안 풀리면 Claude에게 묻기 — 단, "정답 보여줘"가 아니라
+2. 30분 넘게 막히면 정답지 비교 (둘 중 적합한 것):
+   - `solution.py` — 큰 흐름이 헷갈릴 때 (어떻게 연결되는지)
+   - `../../sonlm/<이름>.py` — 특정 함수/클래스가 안 풀릴 때
+3. 정답지를 봐도 베끼지 말고, **막힌 부분만** 보고 닫은 뒤 다시 직접 친다.
+4. 그래도 안 풀리면 Claude에게 묻기 — 단, "정답 보여줘"가 아니라
    "이 부분에서 shape가 왜 이렇게 안 맞아?" 식의 구체 질문이 효과적.
 
 ---

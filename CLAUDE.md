@@ -17,14 +17,14 @@
 
 | 영역 | 수정 가능? | 설명 |
 |---|---|---|
-| `guppylm/` | ❌ **절대 금지** | 원본 + 한국어 학습 주석. "교과서" 역할로 박제. |
+| `sonlm/` | ❌ **절대 금지** | vanilla decoder-only LM (한국어 학습 주석). "교과서" 역할로 박제. |
 | `experiments/00-baseline/` | ❌ **절대 금지** | 모든 ablation의 비교 기준점. 첫 측정 후 봉인. |
 | `experiments/<NN-name>/` | ✅ 자유 | 각 ablation 실험 폴더. 새로 만들거나 결과 채우기. |
 | `shared/` | ✅ 신중하게 | 모든 실험이 공유하는 인프라. 변경 시 모든 실험에 영향. |
 | `README.md`, `experiments/README.md` | ✅ | 새 ablation 결과 표 갱신 |
 | `CLAUDE.md` (이 파일) | ✅ | 협업 방식 합의 변경 시 업데이트 |
 
-**baseline이나 guppylm을 만지려는 충동이 들면 멈추고 사용자에게 먼저 확인.**
+**baseline이나 sonlm을 만지려는 충동이 들면 멈추고 사용자에게 먼저 확인.**
 
 ---
 
@@ -90,7 +90,7 @@
 - **코드 자체**: 영문 docstring 위주 (grep 친화). 한국어 주석은 정말 비직관적인 곳에만 짧게.
 - **README/노트**: 한국어. "왜 이렇게 했나"의 의도와 한계를 명확히.
 - **commit 메시지**: 한국어 OK. 본문은 변경의 *왜*를 짧게. 마지막에 `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>` 붙이기.
-- **클래스명**: `Sonformer`로 통일 (각 실험 폴더의 model.py 안에서).
+- **클래스명**: 패키지 `sonlm`은 `SonLM` (학습 reference). 각 실험 폴더의 model.py는 `Sonformer` (ablation 변형들의 공통 클래스명).
 - **dataclass Config**: 모든 모델 파라미터를 한 곳에. YAML → Config → 모델 흐름.
 - **파라미터 변경**: shared/ 인프라 함수 시그니처 바꿀 땐 모든 실험에 영향이 가니 신중하게.
 
@@ -102,7 +102,7 @@
 sonformer/
 ├── CLAUDE.md                  ← 이 파일
 ├── README.md                  ← 프로젝트 소개 + 8-Phase 로드맵
-├── guppylm/                   ❌ frozen 교과서 (한국어 주석 학습용)
+├── sonlm/                     ❌ frozen 교과서 (한국어 주석, class SonLM)
 ├── shared/                    ⚠️  공통 인프라 (조심히 변경)
 │   ├── datasets.py              load_dataset("shakespeare"|"tinystories"|"wikitext-103"|"pg19")
 │   ├── tokenizers.py            get_tokenizer(dataset, vocab) — BPE 자동 학습/캐시

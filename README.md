@@ -12,9 +12,9 @@
 
 ```
 sonformer/
-├── guppylm/              ⭐ FROZEN baseline — 한국어 주석 잔뜩, "교과서" 역할
+├── sonlm/                ⭐ FROZEN 교과서 — 한국어 주석 잔뜩, vanilla decoder-only LM
 ├── shared/               공통 인프라 (실험 간 공유)
-│   ├── datasets.py         load_dataset("tinystories"), ("shakespeare"), ...
+│   ├── datasets.py         load_dataset("shakespeare" | "tinystories" | "wikitext-103" | "pg19")
 │   ├── tokenizers.py       BPE 학습/로드 (실험 간 동일 토크나이저 강제)
 │   ├── eval.py             perplexity, extrapolation_perplexity, generate_samples
 │   └── logging.py          CSV / wandb 로거
@@ -23,7 +23,11 @@ sonformer/
 │   ├── 00-baseline/        vanilla 기준점 (frozen)
 │   ├── 02a-rope/           Learned PE → RoPE
 │   └── README.md           실험 인덱스
-└── docs/, tools/, ...    원본 유산 (export_onnx 등)
+├── tools/
+│   ├── new_experiment.sh   새 ablation 폴더 스폰
+│   └── compare.py          실험 결과 비교 표
+├── CLAUDE.md             Claude Code 협업 가이드 (자동 로드)
+└── README.md
 ```
 
 각 실험은 **자기완결**이라서 폴더 하나만 보면 무엇을 했는지/어떤 결과인지 완전히 파악 가능. `bash run.sh` 한 줄로 어디서든 (Colab/local/Lambda) 동일한 결과를 재현.
@@ -76,14 +80,14 @@ cd experiments/02b-swiglu && SONFORMER_SKIP_DEPS=1 bash run.sh
 
 코드를 읽는 권장 순서. "데이터가 어떻게 흘러가는지" 따라가는 방향으로 작은 것부터 큰 것 순서.
 
-### 0. [config.py](guppylm/config.py) — 하이퍼파라미터 (1분)
+### 0. [config.py](sonlm/config.py) — 하이퍼파라미터 (1분)
 
 모델/학습 설정값을 먼저 한 번 훑어두면, 다른 파일에서 `d_model=384`, `n_heads=6` 같은 숫자가 어디서 오는지 바로 보입니다.
 
-### 1. [model.py](guppylm/model.py) ⭐ — Transformer 구조 (핵심)
+### 1. [model.py](sonlm/model.py) ⭐ — Transformer 구조 (핵심)
 
 읽는 순서:
-1. `GuppyLM.forward` — 전체 흐름 (토큰 → 임베딩 → 블록 → logits)
+1. `SonLM.forward` — 전체 흐름 (토큰 → 임베딩 → 블록 → logits)
 2. `Block.forward` — Pre-LN + residual 패턴 (4줄, transformer의 정수)
 3. `Attention.forward` — QKV 분리, scaled dot-product, causal mask
 4. `FFN.forward` — 2-layer MLP
@@ -95,7 +99,7 @@ cd experiments/02b-swiglu && SONFORMER_SKIP_DEPS=1 bash run.sh
 - Pre-LN vs Post-LN, weight tying, learned positional embedding
 - temperature/top-k가 생성 결과에 미치는 영향
 
-### 2. [dataset.py](guppylm/dataset.py) — 데이터 파이프라인
+### 2. [dataset.py](sonlm/dataset.py) — 데이터 파이프라인
 
 - 텍스트 → BPE 토큰 ID 변환
 - **`x = ids[:-1]`, `y = ids[1:]` — 한 칸 shift** (language modeling의 본질)
@@ -105,7 +109,7 @@ cd experiments/02b-swiglu && SONFORMER_SKIP_DEPS=1 bash run.sh
 - LM이 한 번의 forward로 어떻게 T개 위치를 동시에 학습하는지 (causal mask 덕분)
 - `pad_id=0`과 `cross_entropy(ignore_index=0)`의 연결
 
-### 3. [train.py](guppylm/train.py) — 학습 루프
+### 3. [train.py](sonlm/train.py) — 학습 루프
 
 - AdamW (`betas=(0.9, 0.95)`) + warmup + cosine LR decay
 - AMP (mixed precision) + GradScaler
@@ -117,7 +121,7 @@ cd experiments/02b-swiglu && SONFORMER_SKIP_DEPS=1 bash run.sh
 - `forward → backward → unscale → clip → step → zero_grad` 순서가 왜 그 순서인지
 - `set_to_none=True`의 미묘한 의미
 
-### 4. [inference.py](guppylm/inference.py) — 추론
+### 4. [inference.py](sonlm/inference.py) — 추론
 
 - ChatML 프롬프트 포맷 (`<|im_start|>...<|im_end|>`)
 - Autoregressive 생성 루프
@@ -127,7 +131,7 @@ cd experiments/02b-swiglu && SONFORMER_SKIP_DEPS=1 bash run.sh
 - 학습과 추론은 본질적으로 같은 일 — 둘 다 "다음 토큰 예측"
 - 프롬프트 엔지니어링의 시작점 — 모델이 학습한 패턴을 그대로 활용하는 방식
 
-### 5. (선택) [prepare_data.py](guppylm/prepare_data.py) + [generate_data.py](guppylm/generate_data.py)
+### 5. (선택) [prepare_data.py](sonlm/prepare_data.py) + [generate_data.py](sonlm/generate_data.py)
 
 BPE tokenizer 학습과 합성 데이터 생성. tokenizer 동작 원리, 데이터 엔지니어링이 궁금하면.
 
@@ -161,12 +165,12 @@ pip install -r requirements.txt
 
 ### 학습 (T4 GPU 기준 ~5분)
 ```bash
-python -m guppylm prepare    # 합성 데이터 + BPE tokenizer 생성
-python -m guppylm train      # 학습 시작
-python -m guppylm chat       # 학습된 모델로 대화
+python -m sonlm prepare    # 합성 데이터 + BPE tokenizer 생성
+python -m sonlm train      # 학습 시작
+python -m sonlm chat       # 학습된 모델로 대화
 ```
 
-> 패키지 이름은 원본 그대로 `guppylm`으로 유지. repo 이름(sonformer)은 **본인 학습 프로젝트로서의 정체성**이고, 코드 패키지 이름은 원본 호환성을 위해 그대로 둡니다.
+> `sonlm`은 학습 reference 패키지 (간단한 vanilla decoder-only LM, 한국어 주석 포함). 이 안의 데이터는 원본 guppylm의 fish 캐릭터 합성 데이터 그대로 — 본격 학습/실험은 `experiments/` 폴더의 ablation kit에서 진행합니다.
 
 ---
 

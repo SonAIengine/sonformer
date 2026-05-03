@@ -1,7 +1,10 @@
-"""Held-out conversation evaluation pack for Guppy.
+"""Held-out conversation evaluation pack (legacy — fish character "Guppy").
 
 Hand-authored test cases. Each has a user message and expected traits
-in Guppy's response (keywords, tone, character consistency).
+(keywords, tone, character consistency).
+
+이 파일은 정성평가 케이스 세트의 예시로 보존됨. 본인 데이터로 학습 시엔
+이 패턴을 참고해 새 EVAL_CASES를 작성하는 게 일반적.
 """
 
 

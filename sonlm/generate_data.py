@@ -1,12 +1,16 @@
 """
-Generate synthetic conversation data for Guppy — a tiny fish brain.
+Synthetic conversation data generator (legacy — fish character "Guppy").
 
-Guppy speaks in short, lowercase sentences. It experiences the world through
-water, temperature, light, vibrations, and food. It doesn't understand
-human abstractions. It's friendly, curious, and a little dumb.
+이 파일은 원본 guppylm 프로젝트의 데이터 생성기이며, sonformer에서는
+**합성 데이터 생성 패턴의 예시**로 보존됨. 캐릭터 톤(짧은 소문자 문장,
+물/온도/먹이 중심 세계관)을 그대로 두는 게 학습용으론 가장 명확.
 
-Each generator uses template composition with randomized details so that
-most samples are unique even at 60K scale.
+본인 색깔의 데이터를 만들고 싶으면 이 파일을 복사해서 캐릭터/도메인을
+다시 짠 뒤 prepare_data.py에서 호출하도록 바꾸면 됨.
+
+원본 디자인:
+    - 60 카테고리 × 다양한 템플릿
+    - 템플릿 합성 + 랜덤 세부정보 → 60K scale에서도 대부분 unique
 """
 
 import json

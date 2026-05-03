@@ -26,18 +26,18 @@ baseline 자체엔 가설 없음. 이 폴더의 역할은 **모든 ablation이 �
 | Init | N(0, 0.02) | GPT-2 스타일 |
 | Dropout | embedding/attn-weights/FFN 출력 | 원조 transformer 스타일 |
 
-### 2-2. 상위 [`guppylm/model.py`](../../guppylm/model.py) 대비 변경점
+### 2-2. 상위 [`sonlm/model.py`](../../sonlm/model.py) 대비 변경점
 
-`guppylm/`의 학습용 코드는 한국어 주석으로 가득한 "교과서" 버전. 실험 폴더의 `model.py`는 같은 아키텍처를 **clean re-implementation** 한 것이며, 다음 변경:
+`sonlm/`의 학습용 코드는 한국어 주석으로 가득한 "교과서" 버전. 실험 폴더의 `model.py`는 같은 아키텍처를 **clean re-implementation** 한 것이며, 다음 변경:
 
 | 변경 | 이유 |
 |---|---|
 | `register_buffer("causal_mask", ...)`로 마스크 캐시 | 매 forward 재생성 비효율 제거 |
 | `dataclass Config`로 인자 일원화 | 하이퍼파라미터를 YAML→dataclass→model로 깨끗히 흘리기 |
 | 한국어 주석 → 영문 docstring 위주 | diff/grep 친화. 학습 노트는 README로 분리 |
-| 클래스명 `GuppyLM` → `Sonformer` | 본 프로젝트 정체성 |
+| 클래스명 `SonLM` → `Sonformer` | 실험 폴더의 ablation 변형들이 공통으로 쓸 이름 |
 
-**기능적/수학적으론 동일** — `guppylm/model.py`와 같은 결과를 내는 vanilla decoder-only transformer.
+**기능적/수학적으론 동일** — `sonlm/model.py`와 같은 결과를 내는 vanilla decoder-only transformer.
 
 ### 2-3. 실제 사용 하이퍼파라미터 (이번 run 기준)
 
@@ -86,7 +86,7 @@ device:      H100 80GB
 
 ### 3-4. (x, y) 페어
 
-[`dataset.py`의 한 칸 shift](../../guppylm/dataset.py)와 동일:
+[`dataset.py`의 한 칸 shift](../../sonlm/dataset.py)와 동일:
 ```
 ids = [A, B, C, D, E]
 x   = [A, B, C, D]      ← 입력

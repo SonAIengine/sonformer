@@ -1,5 +1,5 @@
 """
-GuppyLM training loop.
+SonLM training loop.
 
 ────────────────────────────────────────────────────────────────────────────
 [학습 루프 한 눈에 보기]
@@ -30,9 +30,9 @@ import time
 
 import torch
 
-from .config import GuppyConfig, TrainConfig
+from .config import SonLMConfig, TrainConfig
 from .dataset import get_dataloader
-from .model import GuppyLM
+from .model import SonLM
 
 
 def get_device(config):
@@ -95,7 +95,7 @@ def evaluate(model, loader, device, max_batches=50):
 
 def train():
     # ── 0) 설정 로드 ────────────────────────────────────────────────────────
-    mc = GuppyConfig()                              # 모델 하이퍼파라미터
+    mc = SonLMConfig()                              # 모델 하이퍼파라미터
     tc = TrainConfig()                              # 학습 하이퍼파라미터
     device = get_device(tc)
     torch.manual_seed(tc.seed)                      # 재현성을 위한 시드 고정
@@ -104,7 +104,7 @@ def train():
 
     # ── 1) 모델 생성 ────────────────────────────────────────────────────────
     tokenizer_path = os.path.join(tc.data_dir, "tokenizer.json")
-    model = GuppyLM(mc).to(device)                  # 모델을 GPU(또는 CPU)로 이동
+    model = SonLM(mc).to(device)                  # 모델을 GPU(또는 CPU)로 이동
     print(model.param_summary())
 
     # ── 2) DataLoader 생성 (train / eval) ───────────────────────────────────

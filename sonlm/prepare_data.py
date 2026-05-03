@@ -1,4 +1,4 @@
-"""Prepare training data for GuppyLM."""
+"""Prepare training data for SonLM."""
 
 import json
 import os

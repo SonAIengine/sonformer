@@ -1,5 +1,5 @@
 """
-GuppyLM inference — simple chat.
+SonLM inference — simple chat.
 
 ────────────────────────────────────────────────────────────────────────────
 [추론 흐름 한 눈에 보기]
@@ -39,11 +39,11 @@ import uuid
 import torch
 from tokenizers import Tokenizer
 
-from .config import GuppyConfig
-from .model import GuppyLM
+from .config import SonLMConfig
+from .model import SonLM
 
 
-class GuppyInference:
+class SonLMInference:
     """학습된 체크포인트를 로드해서 chat 응답을 생성하는 엔진."""
 
     def __init__(self, checkpoint_path, tokenizer_path, device="cpu"):
@@ -72,7 +72,7 @@ class GuppyInference:
         if os.path.exists(config_path):
             with open(config_path) as f:
                 cfg = json.load(f)
-            self.config = GuppyConfig(
+            self.config = SonLMConfig(
                 vocab_size=cfg.get("vocab_size", 4096),
                 max_seq_len=cfg.get("max_position_embeddings", cfg.get("max_seq_len", 128)),
                 d_model=cfg.get("hidden_size", cfg.get("d_model", 384)),
@@ -86,14 +86,14 @@ class GuppyInference:
             )
         elif isinstance(ckpt, dict) and "config" in ckpt:
             # 학습 당시의 config가 ckpt에 같이 들어있는 경우
-            valid_fields = {f.name for f in GuppyConfig.__dataclass_fields__.values()}
-            self.config = GuppyConfig(**{k: v for k, v in ckpt["config"].items() if k in valid_fields})
+            valid_fields = {f.name for f in SonLMConfig.__dataclass_fields__.values()}
+            self.config = SonLMConfig(**{k: v for k, v in ckpt["config"].items() if k in valid_fields})
         else:
             print("Warning: No config found, using defaults")
-            self.config = GuppyConfig()
+            self.config = SonLMConfig()
 
         # ── 4) 모델 생성 + weight 로드 ──────────────────────────────────────
-        self.model = GuppyLM(self.config).to(self.device)
+        self.model = SonLM(self.config).to(self.device)
         # 모델에 실제로 존재하는 키만 골라서 로드 (옛 체크포인트 호환).
         # 새 모델에 없는 키가 있으면 strict=True에서 에러 나는 걸 방지.
         filtered = {k: v for k, v in state_dict.items() if k in self.model.state_dict()}
@@ -101,7 +101,7 @@ class GuppyInference:
         self.model.eval()                           # dropout 끔 (추론 모드)
 
         total, _ = self.model.param_count()
-        print(f"GuppyLM loaded: {total/1e6:.1f}M params")
+        print(f"SonLM loaded: {total/1e6:.1f}M params")
 
     def chat_completion(self, messages, temperature=0.7, max_tokens=64,
                         top_k=50, **kwargs):
@@ -168,9 +168,9 @@ class GuppyInference:
 
 
 def main():
-    """CLI 엔트리포인트: `python -m guppylm chat`이 결국 이걸 호출."""
+    """CLI 엔트리포인트: `python -m sonlm chat`이 결국 이걸 호출."""
     import argparse
-    p = argparse.ArgumentParser(description="Chat with Guppy")
+    p = argparse.ArgumentParser(description="Chat with sonlm")
     p.add_argument("--checkpoint", default="checkpoints/best_model.pt")
     p.add_argument("--tokenizer", default="data/tokenizer.json")
     p.add_argument("--device", default="cpu")
@@ -178,7 +178,7 @@ def main():
     args = p.parse_args()
 
     # 모델 로드 (한 번만 — 매 입력마다 다시 로드하면 느려짐)
-    engine = GuppyInference(args.checkpoint, args.tokenizer, args.device)
+    engine = SonLMInference(args.checkpoint, args.tokenizer, args.device)
 
     # ── 단발 모드: --prompt 인자 있으면 한 번 답하고 종료 ──────────────────
     if args.prompt:
@@ -189,7 +189,7 @@ def main():
     # ── 인터랙티브 모드: 사용자 입력을 계속 받음 ─────────────────────────
     # 주의: 매 턴마다 새 messages 리스트를 만들어서 단일 턴으로 동작.
     #       대화 히스토리를 누적하지 않음 → 128 토큰 제한 안에서 안정적.
-    print("\nGuppy Chat (type 'quit' to exit)")
+    print("\nsonlm Chat (type 'quit' to exit)")
     while True:
         inp = input("\nYou> ").strip()
         if inp.lower() in ("quit", "exit", "q"):
@@ -197,7 +197,7 @@ def main():
         result = engine.chat_completion([{"role": "user", "content": inp}])
         msg = result["choices"][0]["message"]
         if msg.get("content"):
-            print(f"Guppy> {msg['content']}")
+            print(f"sonlm> {msg['content']}")
 
 
 if __name__ == "__main__":

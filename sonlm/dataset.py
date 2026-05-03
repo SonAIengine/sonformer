@@ -1,5 +1,5 @@
 """
-GuppyLM dataset loading.
+SonLM dataset loading.
 
 ────────────────────────────────────────────────────────────────────────────
 [이 파일이 하는 일 한 눈에 보기]
@@ -31,7 +31,7 @@ from torch.utils.data import Dataset, DataLoader
 from tokenizers import Tokenizer
 
 
-class GuppyDataset(Dataset):
+class SonLMDataset(Dataset):
     """
     JSONL 파일을 읽어서 토큰화한 ID 리스트들을 메모리에 올려둠.
     PyTorch Dataset이라 __len__과 __getitem__만 구현하면 DataLoader가 알아서 씀.
@@ -113,7 +113,7 @@ def get_dataloader(path, tokenizer_path, max_len=512, batch_size=32, shuffle=Tru
     학습 루프에서 `for x, y in loader:` 로 돌리면
     (B, T_max) 텐서가 매 step마다 흘러나옴.
     """
-    dataset = GuppyDataset(path, tokenizer_path, max_len)
+    dataset = SonLMDataset(path, tokenizer_path, max_len)
     return DataLoader(
         dataset,
         batch_size=batch_size,

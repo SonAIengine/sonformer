@@ -1,14 +1,16 @@
-# ── Generated data & models ─────────────────────────────────
-data/
-dataset/
+# ── Generated data & checkpoints ─────────────────────────────
+# data/ 는 다운로드 캐시. 큰 raw 파일은 무시하되 작은 메타(토크나이저)는 허용.
+data/*/input.txt
+data/*/*.jsonl
+data/*/*.txt
+data/*/cache*/
+data/*/downloads/
+data/*/*.parquet
+data/**/__pycache__/
 checkpoints/
 *.pt
 *.bin
-*.onnx
-
-# ── Allow web/ assets for GitHub Pages ──────────────────────
-!docs/*.onnx
-!docs/*.json
+*.safetensors
 
 # ── Python ──────────────────────────────────────────────────
 venv/
@@ -48,14 +50,14 @@ Desktop.ini
 
 # ── Secrets ──────────────────────────────────────────────────
 .env
+.env.local
 
 # ── Logs & temp ─────────────────────────────────────────────
 *.log
 *.tmp
 *.bak
+wandb/
 
 # ── sonformer experiment kit ────────────────────────────────
 # 작은 텍스트 결과(eval.json, samples.txt, train_log.csv 등)는 commit해서
 # README의 표를 검증/재현 가능하게 함. 큰 체크포인트는 *.pt 룰로 자동 제외.
-# wandb runs
-wandb/

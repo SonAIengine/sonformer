@@ -1,8 +1,10 @@
 """
-GuppyLM — a tiny fish brain.
+sonlm — Vanilla decoder-only transformer (학습 reference).
 
-Vanilla transformer: multi-head attention, ReLU FFN, LayerNorm, learned positional embeddings.
-No GQA, no SwiGLU, no parallel residual, no RoPE. As simple as it gets.
+Architecture: multi-head attention, ReLU FFN, LayerNorm (Pre-LN),
+learned positional embeddings, weight-tied LM head.
+No GQA, no SwiGLU, no parallel residual, no RoPE — 모던 기법은 의도적으로 제외.
+이 단순함이 출발점이고, 모던 기법들은 experiments/ 폴더에서 ablation으로 비교.
 
 ────────────────────────────────────────────────────────────────────────────
 [전체 흐름 한 눈에 보기]
@@ -31,7 +33,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .config import GuppyConfig
+from .config import SonLMConfig
 
 
 class Attention(nn.Module):  # multi-head self-attention
@@ -123,11 +125,11 @@ class Block(nn.Module):
         return x
 
 
-class GuppyLM(nn.Module):
+class SonLM(nn.Module):
     """
     전체 모델: 임베딩 → Block × N → 최종 LayerNorm → lm_head(logits).
     """
-    def __init__(self, config: GuppyConfig):
+    def __init__(self, config: SonLMConfig):
         super().__init__()
         self.config = config
 
@@ -238,4 +240,4 @@ class GuppyLM(nn.Module):
 
     def param_summary(self):
         total, _ = self.param_count()
-        return f"GuppyLM: {total:,} params ({total/1e6:.1f}M)"
+        return f"SonLM: {total:,} params ({total/1e6:.1f}M)"

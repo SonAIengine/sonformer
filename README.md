@@ -32,6 +32,46 @@ sonformer/
 
 ---
 
+## 학습 워크플로 (Claude와 함께)
+
+이 저장소는 [Claude Code](https://claude.com/claude-code)와 짝을 이뤄 쓰도록 설계됐습니다 — [`CLAUDE.md`](CLAUDE.md)에 협업 방식이 박혀있어서, 다음과 같은 발화로 새 실험을 시작할 수 있습니다.
+
+| 발화 | 결과 |
+|---|---|
+| "**SwiGLU 공부하고 싶어**" | `experiments/02b-swiglu/` 자동 스폰 + 가설부터 함께 작성 |
+| "**RoPE 어떻게 동작해?**" | 수학적 직관 + 코드 라인별 설명 |
+| "**FlashAttention 직접 구현해보자**" | `02e-flashattn/` 스폰 + 한 줄씩 함께 |
+| "**왜 PPL 차이가 이렇게 나?**" | loss curve / attention map 분석 |
+
+### 도구
+
+```bash
+# 새 ablation 폴더 스폰 (baseline 복사 + README 템플릿 + config 갱신)
+bash tools/new_experiment.sh 02b-swiglu "FFN: ReLU → SwiGLU"
+
+# 모든 완료된 실험 결과를 한 표로
+python tools/compare.py
+# 또는 CSV로
+python tools/compare.py --csv summary.csv
+
+# 학습 실행 (의존성 이미 있으면 스킵)
+cd experiments/02b-swiglu && SONFORMER_SKIP_DEPS=1 bash run.sh
+```
+
+### 진행 현황 (한눈에)
+
+| 실험 | 데이터 | Eval PPL | Δ vs baseline | 상태 |
+|---|---|---|---|---|
+| [00-baseline](experiments/00-baseline/) | Shakespeare | 37.47 | (기준) | ✅ |
+| [02a-rope](experiments/02a-rope/) | Shakespeare | 28.47 | **-24.0%** | ✅ |
+| 02b-swiglu | _ | _ | _ | ⚪ TODO |
+| 02c-rmsnorm | _ | _ | _ | ⚪ TODO |
+| ... | _ | _ | _ | ⚪ TODO |
+
+전체 로드맵 (8 Phase, 100+ 항목)은 아래 [발전 계획](#발전-계획-roadmap) 참고.
+
+---
+
 ## 학습 커리큘럼
 
 코드를 읽는 권장 순서. "데이터가 어떻게 흘러가는지" 따라가는 방향으로 작은 것부터 큰 것 순서.

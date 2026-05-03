@@ -116,8 +116,10 @@ sonformer/
 │   └── 02a-rope/                ✅ 첫 ablation (PPL 28.47 on Shakespeare)
 ├── data/                      📦 다운로드 캐시 (.gitignore, 토크나이저는 commit)
 ├── practice/                  🖐️ 사용자 손코딩 공간 (Claude는 가이드만, 코드는 채우지 말 것)
+│   ├── README.md                  practice 인덱스 + 다음 가능한 방향 (Tier 1~5)
 │   ├── sonlm-from-scratch/        decoder-only transformer (GPT 계열) — solution.py 정답지 포함
-│   └── encoder-decoder-from-scratch/  원조 2017 encoder-decoder + cross-attention — solution.py 포함
+│   ├── encoder-decoder-from-scratch/  원조 2017 encoder-decoder + cross-attention — solution.py 포함
+│   └── bert-from-scratch/         encoder-only + MLM (BERT) — 단일 파일 정답지
 └── tools/
     ├── new_experiment.sh        새 ablation 폴더 스폰
     └── compare.py               여러 실험 결과 비교 표 출력

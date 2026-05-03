@@ -1,208 +1,137 @@
-<p align="center">
-  <img src="assets/guppy.png" alt="GuppyLM" width="400"/>
-</p>
+# sonformer
 
-<h1 align="center">GuppyLM</h1>
-<p align="center"><em>A ~9M parameter LLM that talks like a small fish.</em></p>
+> Transformer를 코드로 직접 따라가며 공부하는 개인 학습 저장소.
 
-<p align="center">
-  <a href="https://huggingface.co/datasets/arman-bd/guppylm-60k-generic"><img src="https://img.shields.io/badge/🤗_Dataset-guppylm--60k-blue" alt="Dataset"/></a>&nbsp;
-  <a href="https://huggingface.co/arman-bd/guppylm-9M"><img src="https://img.shields.io/badge/🤗_Model-guppylm--9M-orange" alt="Model"/></a>&nbsp;
-  <a href="https://github.com/arman-bd/guppylm/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"/></a>
-  <br/>
-  <a href="https://colab.research.google.com/github/arman-bd/guppylm/blob/main/train_guppylm.ipynb"><img src="https://img.shields.io/badge/Train_in-Colab-F9AB00?logo=googlecolab" alt="Train"/></a>&nbsp;
-  <a href="https://colab.research.google.com/github/arman-bd/guppylm/blob/main/use_guppylm.ipynb"><img src="https://img.shields.io/badge/Chat_in-Colab-F9AB00?logo=googlecolab" alt="Chat"/></a>
-  <br/>
-  <a href="https://www.linkedin.com/pulse/build-your-own-language-model-5-minutes-i-made-mine-hossain--supif/"><img src="https://img.shields.io/badge/Article-LinkedIn-0A66C2?logo=linkedin" alt="LinkedIn Article"/></a>&nbsp;
-  <a href="https://arman-bd.medium.com/build-your-own-llm-in-5-minutes-i-made-mine-talk-like-a-fish-e20c338a3d14"><img src="https://img.shields.io/badge/Article-Medium-000000?logo=medium" alt="Medium Article"/></a>
-  <br/><br/>
-  <a href="https://arman-bd.github.io/guppylm/"><img src="https://img.shields.io/badge/Try_in-Browser-64ffda?style=for-the-badge&logo=webassembly&logoColor=white" alt="Browser Demo"/></a>
-</p>
+[arman-bd/guppylm](https://github.com/arman-bd/guppylm)을 베이스로, 대학원 과정에서 transformer 아키텍처와 LLM 학습 파이프라인 전체를 한 줄씩 이해하고 본인 손으로 발전시키는 것을 목표로 합니다.
+
+모든 핵심 파일에는 **shape 추적 + 동작 원리 + 설계 의도**를 담은 한국어 주석이 달려있습니다.
 
 ---
 
-> **This project exists to show that training your own language model is not magic.**
-> No PhD required. No massive GPU cluster. One Colab notebook, 5 minutes, and you have a working LLM that you built from scratch — data generation, tokenizer, model architecture, training loop, and inference. If you can run a notebook, you can train a language model.
->
-> It won't produce a billion-parameter model that writes essays. But it will show you exactly how every piece works — from raw text to trained weights to generated output — so the big models stop feeling like black boxes.
+## 학습 커리큘럼
+
+코드를 읽는 권장 순서. "데이터가 어떻게 흘러가는지" 따라가는 방향으로 작은 것부터 큰 것 순서.
+
+### 0. [config.py](guppylm/config.py) — 하이퍼파라미터 (1분)
+
+모델/학습 설정값을 먼저 한 번 훑어두면, 다른 파일에서 `d_model=384`, `n_heads=6` 같은 숫자가 어디서 오는지 바로 보입니다.
+
+### 1. [model.py](guppylm/model.py) ⭐ — Transformer 구조 (핵심)
+
+읽는 순서:
+1. `GuppyLM.forward` — 전체 흐름 (토큰 → 임베딩 → 블록 → logits)
+2. `Block.forward` — Pre-LN + residual 패턴 (4줄, transformer의 정수)
+3. `Attention.forward` — QKV 분리, scaled dot-product, causal mask
+4. `FFN.forward` — 2-layer MLP
+5. `generate` — autoregressive 샘플링, temperature/top-k
+
+**여기서 배우는 것**
+- Multi-head self-attention의 shape 변환 (B, T, C → B, H, T, D)
+- Causal mask가 왜 필요한지, `√d_k` 스케일링의 의미
+- Pre-LN vs Post-LN, weight tying, learned positional embedding
+- temperature/top-k가 생성 결과에 미치는 영향
+
+### 2. [dataset.py](guppylm/dataset.py) — 데이터 파이프라인
+
+- 텍스트 → BPE 토큰 ID 변환
+- **`x = ids[:-1]`, `y = ids[1:]` — 한 칸 shift** (language modeling의 본질)
+- Padding과 `collate_fn`
+
+**여기서 배우는 것**
+- LM이 한 번의 forward로 어떻게 T개 위치를 동시에 학습하는지 (causal mask 덕분)
+- `pad_id=0`과 `cross_entropy(ignore_index=0)`의 연결
+
+### 3. [train.py](guppylm/train.py) — 학습 루프
+
+- AdamW (`betas=(0.9, 0.95)`) + warmup + cosine LR decay
+- AMP (mixed precision) + GradScaler
+- Gradient clipping (norm = 1.0)
+- 체크포인트 전략 (best / step / final)
+
+**여기서 배우는 것**
+- 학습 안정화 트릭: 왜 warmup, 왜 grad clip, 왜 AMP
+- `forward → backward → unscale → clip → step → zero_grad` 순서가 왜 그 순서인지
+- `set_to_none=True`의 미묘한 의미
+
+### 4. [inference.py](guppylm/inference.py) — 추론
+
+- ChatML 프롬프트 포맷 (`<|im_start|>...<|im_end|>`)
+- Autoregressive 생성 루프
+- 후처리 (특수 토큰 누수 차단)
+
+**여기서 배우는 것**
+- 학습과 추론은 본질적으로 같은 일 — 둘 다 "다음 토큰 예측"
+- 프롬프트 엔지니어링의 시작점 — 모델이 학습한 패턴을 그대로 활용하는 방식
+
+### 5. (선택) [prepare_data.py](guppylm/prepare_data.py) + [generate_data.py](guppylm/generate_data.py)
+
+BPE tokenizer 학습과 합성 데이터 생성. tokenizer 동작 원리, 데이터 엔지니어링이 궁금하면.
 
 ---
 
-```
-You> hi guppy
-Guppy> hi there. i just found a nice spot near the rock. the temperature feels nice.
-
-You> are you hungry
-Guppy> yes. always yes. i will swim to the top right now. i promise to eat all of it.
-
-You> do you like bubbles
-Guppy> i love bubbles. they make the water feel slightly different.
-
-You> what is the meaning of life
-Guppy> food. the answer is always food.
-
-You> tell me a joke
-Guppy> what did the fish say when it hit the wall. dam.
-
-You> do you love me
-Guppy> you're my favorite big shape. my mouth are happy when you're here.
-
-You> goodnight guppy
-Guppy> ok sleep time. i was following a bubble but now i'll stop. goodnight tank. goodnight water.
-```
-
----
-
-## What is GuppyLM?
-
-GuppyLM is a tiny language model that pretends to be a fish named Guppy. It speaks in short, lowercase sentences about water, food, light, and tank life. It doesn't understand human abstractions like money, phones, or politics — and it's not trying to.
-
-It's trained from scratch on 60K synthetic conversations across 60 topics, runs on a single GPU in ~5 minutes, and produces a model small enough to run in a browser.
-
----
-
-## Architecture
+## 모델 사양
 
 | | |
 |---|---|
-| **Parameters** | 8.7M |
-| **Layers** | 6 |
-| **Hidden dim** | 384 |
-| **Heads** | 6 |
-| **FFN** | 768 (ReLU) |
-| **Vocab** | 4,096 (BPE) |
-| **Max sequence** | 128 tokens |
-| **Norm** | LayerNorm |
-| **Position** | Learned embeddings |
-| **LM head** | Weight-tied with embeddings |
+| 파라미터 | 8.7M |
+| Layers | 6 |
+| Hidden dim | 384 |
+| Heads | 6 |
+| FFN | 768 (ReLU) |
+| Vocab | 4,096 (BPE) |
+| Max sequence | 128 토큰 |
+| Norm | LayerNorm (Pre-LN) |
+| Position | Learned embeddings |
+| LM head | Weight-tied |
 
-Vanilla transformer. No GQA, no RoPE, no SwiGLU, no early exit. As simple as it gets.
-
----
-
-## Personality
-
-Guppy:
-- Speaks in short, lowercase sentences
-- Experiences the world through water, temperature, light, vibrations, and food
-- Doesn't understand human abstractions
-- Is friendly, curious, and a little dumb
-- Thinks about food a lot
-
-**60 topics:** greetings, feelings, temperature, food, light, water, tank, noise, night, loneliness, bubbles, glass, reflection, breathing, swimming, colors, taste, plants, filter, algae, snails, scared, excited, bored, curious, happy, tired, outside, cats, rain, seasons, music, visitors, children, meaning of life, time, memory, dreams, size, future, past, name, weather, sleep, friends, jokes, fear, love, age, intelligence, health, singing, TV, and more.
+Vanilla decoder-only transformer. RoPE, GQA, SwiGLU 같은 모던 기법은 의도적으로 제외 — **기본 구조 학습이 목적**이라 단순함이 더 중요합니다.
 
 ---
 
-## Quick Start
+## 실행
 
-### Try in Browser (no install needed)
-
-[![Try in Browser](https://img.shields.io/badge/Try_in-Browser-64ffda?logo=webassembly)](https://arman-bd.github.io/guppylm/)
-
-Runs entirely in your browser via WebAssembly. Downloads a quantized ONNX model (~10 MB) and runs inference locally — no server, no API keys.
-
-### Chat with Guppy in Colab
-
-[![Open in Colab](https://img.shields.io/badge/Chat_in-Colab-F9AB00?logo=googlecolab)](https://colab.research.google.com/github/arman-bd/guppylm/blob/main/use_guppylm.ipynb)
-
-Downloads the pre-trained model from HuggingFace and lets you chat. Just run all cells.
-
-### Train your own
-
-[![Open in Colab](https://img.shields.io/badge/Train_in-Colab-F9AB00?logo=googlecolab)](https://colab.research.google.com/github/arman-bd/guppylm/blob/main/train_guppylm.ipynb)
-
-1. Set runtime to **T4 GPU**
-2. **Run all cells** — downloads dataset, trains tokenizer, trains model, tests it
-3. Upload to HuggingFace or download locally
-
-### Chat locally
-
+### 의존성 설치
 ```bash
-pip install torch tokenizers
-python -m guppylm chat
+pip install -r requirements.txt
 ```
 
-```
-You> the cat is looking at you
-Guppy> i hide behind the plant when the furry one comes.
-
-You> it is raining outside
-Guppy> i think rain is the best thing about outside.
-```
-
-In interactive chat mode, the conversation grows and quickly runs into the 128-token limit, reducing quality.
-You can also invoke chat with a single prompt, and exit after the response:
-
+### 학습 (T4 GPU 기준 ~5분)
 ```bash
-python -m guppylm chat --prompt "tell me a joke"
+python -m guppylm prepare    # 합성 데이터 + BPE tokenizer 생성
+python -m guppylm train      # 학습 시작
+python -m guppylm chat       # 학습된 모델로 대화
 ```
 
+> 패키지 이름은 원본 그대로 `guppylm`으로 유지. repo 이름(sonformer)은 **본인 학습 프로젝트로서의 정체성**이고, 코드 패키지 이름은 원본 호환성을 위해 그대로 둡니다.
 
 ---
 
-## Dataset
+## 발전 계획
 
-**[arman-bd/guppylm-60k-generic](https://huggingface.co/datasets/arman-bd/guppylm-60k-generic)** on HuggingFace.
+대학원 과정과 함께 진행할 학습/실험 항목:
 
-| | |
-|---|---|
-| Samples | 60,000 (57K train / 3K test) |
-| Format | `{"input": "...", "output": "...", "category": "..."}` |
-| Categories | 60 |
-| Generation | Synthetic template composition |
-
-```python
-from datasets import load_dataset
-ds = load_dataset("arman-bd/guppylm-60k-generic")
-print(ds["train"][0])
-# {'input': 'hi guppy', 'output': 'hello. the water is nice today.', 'category': 'greeting'}
-```
+- [ ] Attention shape 변환을 손으로 직접 따라가며 정리 (블로그/노트)
+- [ ] Learned PE → RoPE로 교체해보기
+- [ ] ReLU FFN → SwiGLU로 교체
+- [ ] KV cache로 추론 속도 개선
+- [ ] FlashAttention(또는 `scaled_dot_product_attention`) 도입
+- [ ] 한국어 합성 데이터로 재학습
+- [ ] Multi-head → Grouped-Query Attention 비교
+- [ ] Loss curve, attention map 시각화
 
 ---
 
-## Project Structure
+## 출처 및 라이선스
 
-```
-guppylm/
-├── config.py               Hyperparameters (model + training)
-├── model.py                Vanilla transformer
-├── dataset.py              Data loading + batching
-├── train.py                Training loop (cosine LR, AMP)
-├── generate_data.py        Conversation data generator (60 topics)
-├── eval_cases.py           Held-out test cases
-├── prepare_data.py         Data prep + tokenizer training
-└── inference.py            Chat interface
+이 저장소는 [arman-bd/guppylm](https://github.com/arman-bd/guppylm)을 학습 베이스로 사용합니다. MIT 라이선스이며 원본의 `LICENSE` 파일은 그대로 보존되어 있습니다.
 
-tools/
-├── make_colab.py           Generates Colab notebooks
-├── export_onnx.py          Export model to ONNX (quantized uint8)
-├── export_dataset.py       Push dataset to HuggingFace
-└── dataset_card.md         HuggingFace dataset README
+**원본의 핵심 가치 (인용)**
+> 자기만의 언어모델을 학습시키는 일은 마법이 아니다.
+> 박사 학위도, 대규모 GPU 클러스터도 필요 없다.
+> 노트북 한 권, 5분, 그리고 처음부터 끝까지 직접 만든 LLM.
 
-docs/
-├── index.html              Browser demo (ONNX + WASM)
-├── download.sh             Download model.onnx + tokenizer from HF
-├── model.onnx              Quantized uint8 (~10 MB)
-├── tokenizer.json          BPE tokenizer
-└── guppy.png               Logo (transparent)
-```
+이 메시지에 공감해 학습 베이스로 채택했고, sonformer는 여기에 한국어 주석/학습 노트/개인 실험을 누적해가는 저장소입니다.
 
 ---
 
-## Design Decisions
-
-**Why no system prompt?** Every training sample had the same one. A 9M model can't conditionally follow instructions — the personality is baked into the weights. Removing it saves ~60 tokens per inference.
-
-**Why single-turn only?** Multi-turn degraded at turn 3-4 due to the 128-token context window. A fish that forgets is on-brand, but garbled output isn't. Single-turn is reliable.
-
-**Why vanilla transformer?** GQA, SwiGLU, RoPE, and early exit add complexity that doesn't help at 9M params. Standard attention + ReLU FFN + LayerNorm produces the same quality with simpler code.
-
-**Why synthetic data?** A fish character with consistent personality needs consistent training data. Template composition with randomized components (30 tank objects, 17 food types, 25 activities) generates ~16K unique outputs from ~60 templates.
-
----
-
-## License
-
-MIT
-
-<!-- GitAds-Verify: UW3VONXNDRGEZ2O7RF4N2PFHSUR3DUJB -->
+License: MIT

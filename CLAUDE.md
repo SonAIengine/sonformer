@@ -116,10 +116,15 @@ sonformer/
 │   └── 02a-rope/                ✅ 첫 ablation (PPL 28.47 on Shakespeare)
 ├── data/                      📦 다운로드 캐시 (.gitignore, 토크나이저는 commit)
 ├── practice/                  🖐️ 사용자 손코딩 공간 (Claude는 가이드만, 코드는 채우지 말 것)
-│   ├── README.md                  practice 인덱스 + 다음 가능한 방향 (Tier 1~5)
-│   ├── sonlm-from-scratch/        decoder-only transformer (GPT 계열) — solution.py 정답지 포함
-│   ├── encoder-decoder-from-scratch/  원조 2017 encoder-decoder + cross-attention — solution.py 포함
-│   └── bert-from-scratch/         encoder-only + MLM (BERT) — 단일 파일 정답지
+│   ├── README.md                  practice 인덱스 + 8-tier 커리큘럼 (Tier 0~7)
+│   ├── 00-tensor-autograd/        tensor + autograd 손풀이 (Tier 0 기초)
+│   ├── 01-mlp-from-scratch/       MLP on two-moons (Tier 0 기초)
+│   ├── 02-cnn-from-scratch/       1D TextCNN (Tier 1 pre-transformer)
+│   ├── 03-rnn-from-scratch/       Vanilla Elman RNN (Tier 1)
+│   ├── 04-lstm-from-scratch/      4-gate LSTM (Tier 1)
+│   ├── 05-sonlm-from-scratch/     decoder-only transformer (Tier 2, GPT 계열)
+│   ├── 06-encoder-decoder-from-scratch/  원조 2017 encoder-decoder (Tier 2)
+│   └── 07-bert-from-scratch/      encoder-only + MLM (Tier 2, BERT)
 └── tools/
     ├── new_experiment.sh        새 ablation 폴더 스폰
     └── compare.py               여러 실험 결과 비교 표 출력

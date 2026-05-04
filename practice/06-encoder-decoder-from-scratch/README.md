@@ -7,14 +7,14 @@
 
 ## 왜 이걸 따로 공부하나?
 
-`practice/sonlm-from-scratch/`에서 만든 건 **decoder-only** (GPT 계열). 이건 현재 LLM의 주류지만, **transformer 가족의 절반**일 뿐. 원조 transformer는 encoder-decoder 구조였고, 이게 아직도 살아있는 곳:
+`practice/05-sonlm-from-scratch/`에서 만든 건 **decoder-only** (GPT 계열). 이건 현재 LLM의 주류지만, **transformer 가족의 절반**일 뿐. 원조 transformer는 encoder-decoder 구조였고, 이게 아직도 살아있는 곳:
 
 - 번역 (T5, mBART, NLLB)
 - 요약 (BART, Pegasus)
 - 음성 인식 (Whisper의 decoder 부분)
 - 이미지 캡셔닝 (BLIP-2 등)
 
-**핵심 차이점은 cross-attention.** decoder가 매 step마다 encoder의 출력을 참조하는 메커니즘. decoder-only로는 표현하기 어려운 "고정된 입력 → 가변 출력" 패턴을 자연스럽게 다룸.
+**핵심 차이점은 cross-attention.** decoChinchillader가 매 step마다 encoder의 출력을 참조하는 메커니즘. decoder-only로는 표현하기 어려운 "고정된 입력 → 가변 출력" 패턴을 자연스럽게 다룸.
 
 ---
 
@@ -291,7 +291,7 @@ loss = F.cross_entropy(
 1. **30분 직접 시도** — 답답한 만큼 손에 새겨짐.
 2. 정답지 비교 (둘 중 적합한 것):
    - `solution.py` (이 폴더) — 큰 흐름이 헷갈릴 때
-   - decoder-only와 어떻게 다른지 헷갈리면 `../sonlm-from-scratch/solution.py`와 diff
+   - decoder-only와 어떻게 다른지 헷갈리면 `../05-sonlm-from-scratch/solution.py`와 diff
 3. Claude에게 묻기 — 단, "이 부분에서 mask shape가 왜 이렇게?" 식의 구체 질문.
 
 ---

@@ -11,7 +11,7 @@
 이 폴더 안에 다음을 직접 만든다:
 
 ```
-practice/sonlm-from-scratch/
+practice/05-sonlm-from-scratch/
 ├── README.md        ← (이 파일) 단계별 가이드
 ├── solution.py      ← 정답지 — 모든 걸 한 파일에 담은 nanoGPT 스타일 reference
 │

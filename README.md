@@ -102,22 +102,25 @@ python -m sonlm chat       # 학습된 모델로 대화
 
 ---
 
-## Roadmap (8 Phase)
+## Roadmap (11 Phase)
 
-vanilla transformer를 출발점으로 최신 트렌드까지 직접 구현/측정해 본인 색깔의 모델로 발전시킵니다. 사이클: `구현 → 학습 → ablation → 정리`.
+수학 기초부터 SOTA까지 — 이 한 트랙을 다 통과하면 현대 LLM의 모든 핵심을 직접 구현/측정/배포할 수 있습니다.
 
 | Phase | 영역 | 핵심 항목 |
 |---|---|---|
-| 1 | 기본기 | shape 추적, mask 시각화, weight tying ablation, attention heatmap 로깅 |
-| 2 | 아키텍처 변형 | RoPE/ALiBi · MQA/GQA/MLA · SwiGLU/MoE · RMSNorm/QK-Norm · FlashAttention |
-| 3 | 학습 최적화 | Lion/Sophia/Muon · WSD/μP · bf16/fp8 · ZeRO/FSDP · sequence packing |
-| 4 | Post-training | LoRA/QLoRA · PPO/DPO/GRPO · R1-style RL · CoT distillation |
-| 5 | 추론 최적화 | KV cache · GPTQ/AWQ/BitNet · Speculative · EAGLE/Medusa · vLLM |
-| 6 | 평가 | lm-eval-harness · MMLU/GSM8K/HumanEval · IFEval · Long-context · KMMLU |
-| 7 | 최신 트렌드 | Mamba/Jamba · MTP · Multimodal/VLM · RAG · Agent/Tool use |
-| 8 | 한국어 / 본인 색깔 | sonformer-ko · 한국어 BPE · 모델 카드 · HF Hub 데모 |
+| 0 | 수학 기초 | 선형대수 · SVD · chain rule · entropy/KL · convex optimization |
+| 1 | ML/DL 기초 | regression · backprop · init/norm/dropout · 디버깅 (sanity, gradient check) |
+| 2 | 시퀀스 모델 | CNN/RNN/LSTM/GRU · Bahdanau attn · Transformer 가족 (decoder/encoder/enc-dec) |
+| 3 | Transformer 변형 | RoPE/ALiBi · MQA/GQA/MLA · FlashAttn 1/2/3 · SwiGLU/MoE · RMSNorm |
+| 4 | 학습 최적화 | Lion/Sophia/Muon · WSD/μP · bf16/fp8 · ZeRO/FSDP/TP/PP/EP · scaling laws · Triton |
+| 5 | 데이터/토크나이저 | BPE/WordPiece/SP · dedup/filter · FineWeb/RedPajama · synthetic (Phi 스타일) |
+| 6 | Post-training | LoRA/QLoRA/DoRA · PPO/DPO/KTO/GRPO · R1-style RL · CAI · red-teaming |
+| 7 | 추론 최적화 | KV cache · GPTQ/AWQ/BitNet · Speculative/EAGLE · vLLM/SGLang/llama.cpp |
+| 8 | 평가/안전/해석 | lm-eval-harness · ARC-AGI · LLM-as-judge · SAE · mech interp |
+| 9 | 최신 트렌드 | Mamba/Jamba · MTP · multimodal · RAG/GraphRAG · agents · diffusion LLM |
+| 10 | 한국어/본인 색깔 | sonformer-ko · KMMLU · 모델 카드 · HF Hub 데모 |
 
-전체 체크리스트: [ROADMAP.md](ROADMAP.md)
+전체 체크리스트 + reference: [ROADMAP.md](ROADMAP.md)
 
 ---
 

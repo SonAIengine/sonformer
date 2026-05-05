@@ -11,6 +11,9 @@
 | 🖐️ **학습 트랙** | [`practice/`](practice/) | 빈 폴더에서부터 모델을 직접 손코딩. autograd 기초 → MLP/CNN/RNN/LSTM → Transformer 가족까지 8단계 |
 | 🔬 **실험 트랙** | [`experiments/`](experiments/) | vanilla transformer baseline 위에 모던 기법을 한 가지씩 ablation, PPL/속도/메모리 정량 비교 |
 
+> **동선** — 두 트랙은 *연결*돼 있음. 같은 기법을 `practice/`에서 먼저 손코딩(구조 이해) → `experiments/`에서 ablation(효과 측정).
+> 예: RoPE 공부하고 싶다 → `practice/llama-from-scratch/`(예정)에서 손으로 구현 → [`experiments/02a-rope/`](experiments/02a-rope/)에서 vanilla 대비 PPL 변화 측정.
+
 ---
 
 ## Quick Start

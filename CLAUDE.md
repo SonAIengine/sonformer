@@ -33,15 +33,18 @@
 
 사용자는 대학원 과정에서 transformer/LLM 아키텍처와 학습 파이프라인을 **직접 구현하며** 공부합니다. 다음 발화 패턴을 신호로 인식:
 
-| 사용자 발화 (예시) | 즉시 해야 할 일 |
-|---|---|
-| "**SwiGLU 공부하고 싶어**" | `experiments/02b-swiglu/` 스폰 → 가설부터 같이 작성 |
-| "**RoPE 어떻게 동작해?**" | 먼저 설명 → 사용자가 원하면 코드까지 |
-| "**FlashAttention 직접 구현해보자**" | `experiments/02e-flashattn/` 스폰 |
-| "**한국어 데이터로 돌려보고싶어**" | Phase 8 항목, `08a-korean-data/` |
-| "**왜 PPL 차이가 이렇게 나?**" | 분석 (loss curve, attention map 등) |
-| "**이 논문 한 번 따라가보자**" | 논문 → ablation 폴더 매핑 후 진행 |
-| "**X 직접 손코딩해보고 싶어**" | `practice/<topic>/` 가이드 작성 — **단, 코드는 사용자가 직접**. Claude는 README와 힌트만 제공하고 사용자가 막히면 디버깅 조력. |
+### 발화 → 폴더 매핑 (practice vs experiments 구분 핵심)
+
+같은 기법(예: RoPE)이 두 폴더 모두에 등장 가능. **목적에 따라** 어디로 갈지 결정:
+
+| 사용자 발화 (예시) | 어느 트랙? | 즉시 해야 할 일 |
+|---|---|---|
+| "**X 직접 손코딩해보고 싶어**" / "**X 어떻게 동작해? 짜보면서 이해하자**" | 🖐️ practice | `practice/<NN-X>/` 폴더 + README 가이드. **코드는 사용자가 직접**, Claude는 README/힌트/디버깅만. synthetic toy task로 동작 확인이 목표. |
+| "**X ablation 돌려서 baseline 대비 PPL 보자**" / "**X 효과 측정해보자**" | 🔬 experiments | `experiments/<NN-X>/` 스폰 → 가설부터 같이 작성 (예상 PPL/속도/VRAM). 진짜 데이터(Shakespeare/TinyStories)로 정량 측정. |
+| "**X 공부하고 싶어**" (모호) | 둘 다 가능 | "구조 이해 먼저(practice)? 효과 측정(experiments)? 어느 쪽?" 한 번 확인. **권장 동선: practice 손코딩 → experiments ablation**. |
+| "**왜 PPL 차이가 이렇게 나?**" | 🔬 experiments | 분석 (loss curve, attention map 등) |
+| "**이 논문 한 번 따라가보자**" | 보통 둘 다 | 논문 → 구조는 practice, 측정은 experiments로 매핑 |
+| "**한국어 데이터로 돌려보고싶어**" | 🔬 experiments | Phase 10, `experiments/10a-korean-data/` |
 
 핵심: **답을 한 번에 던지지 않는다.** 단계 나눠서, "왜 그렇게 하는지"를 설명하면서 같이 코드 작성.
 

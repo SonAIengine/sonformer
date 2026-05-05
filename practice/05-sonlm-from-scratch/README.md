@@ -4,6 +4,13 @@
 > 막히면 `solution.py` (단일 파일 정답지) 또는 `../../sonlm/` (모듈 분리 정답지)를 비교.
 > 단, 가능하면 끝까지 안 보고 만들어보기.
 
+> **📦 sonlm/ 패키지와의 관계**
+> 이 폴더의 `solution.py`는 최상위 [`sonlm/`](../../sonlm/) 패키지(다파일: config/model/dataset/train/inference)의 **단일파일 학습판**. 모델 구조와 학습 흐름은 동일하되,
+> - `sonlm/` = `experiments/` ablation의 **baseline reference 패키지** (실제로 import해서 학습 돌림, 한국어 주석 잔뜩)
+> - 이 폴더 = **학습용 단일파일** (한 곳에서 흐름 다 보이게)
+>
+> 둘 다 볼 필요 없음. **처음 학습할 땐 이 폴더의 `solution.py` 한 파일**을 보고, 그 다음 `experiments/` 작업할 때 자연스럽게 `sonlm/` 패키지로 옮겨감.
+
 ---
 
 ## 목표

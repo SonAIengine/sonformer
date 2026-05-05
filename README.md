@@ -115,7 +115,7 @@ python -m sonlm chat       # 학습된 모델로 대화
 | 1 | ML/DL 기초 | regression · backprop · init/norm/dropout · 디버깅 (sanity, gradient check) |
 | 2 | 시퀀스 모델 | CNN/RNN/LSTM/GRU · Bahdanau attn · Transformer 가족 (decoder/encoder/enc-dec) |
 | 3 | Transformer 변형 | RoPE/ALiBi · MQA/GQA/MLA · FlashAttn 1/2/3 · SwiGLU/MoE · RMSNorm |
-| 4 | 학습 최적화 | Lion/Sophia/Muon · WSD/μP · bf16/fp8 · ZeRO/FSDP/TP/PP/EP · scaling laws · Triton |
+| 4 | 학습 최적화 + 시스템 | Lion/Sophia/Muon · WSD/μP · bf16/fp8 · ZeRO/FSDP/TP/PP/EP · scaling laws · **CUDA/Triton, GPU memory hierarchy, NCCL, NVLink/IB/RDMA, nsight profiling** |
 | 5 | 데이터/토크나이저 | BPE/WordPiece/SP · dedup/filter · FineWeb/RedPajama · synthetic (Phi 스타일) |
 | 6 | Post-training | LoRA/QLoRA/DoRA · PPO/DPO/KTO/GRPO · R1-style RL · CAI · red-teaming |
 | 7 | 추론 최적화 | KV cache · GPTQ/AWQ/BitNet · Speculative/EAGLE · vLLM/SGLang/llama.cpp |

@@ -205,17 +205,63 @@ vanilla 대비 **PPL / wallclock / VRAM**으로 ablation. 모든 항목 `experim
 - [ ] **Inference scaling laws** (test-time compute scaling)
 - [ ] Model 크기 vs 데이터 vs FLOPs 트레이드오프
 
-### CUDA / Kernel 수준 (선택, 깊이 가는 사람용)
-- [ ] **Triton** 입문 — Python에서 CUDA 커널 작성
-- [ ] **FlashAttention** Triton 버전 직접 구현
-- [ ] **Fused kernel** (Linear + GELU 등)
+### GPU 하드웨어 / 메모리 hierarchy
+"학습이 왜 이 속도인가"를 답하려면 하드웨어 구조 이해가 필수.
+- [ ] **GPU 메모리 계층**: HBM (80GB / 3TB/s) → L2 cache → SMEM/L1 → registers
+      각 layer의 capacity / latency / bandwidth 외워두기
+- [ ] **SM (Streaming Multiprocessor)** 구조 — H100 132 SMs, 각 SM의 warp scheduler
+- [ ] **Thread hierarchy**: thread → **warp (32)** → block → grid
+- [ ] **Tensor Cores** — fp16/bf16/fp8/int8 matrix engine, mma instruction
+- [ ] **Roofline model** — compute-bound vs memory-bound 식별
+- [ ] **Arithmetic intensity** 계산 (FLOPs / byte)
+- [ ] H100 vs A100 vs H200 vs B200 spec 비교 (FLOPS, 메모리, 대역폭)
+
+### CUDA / Kernel 직접 작성
+- [ ] **CUDA C++** 기초 — vector add → reduction → matrix multiply
+- [ ] 메모리 **coalescing** — global memory access 최적화
+- [ ] **Bank conflict** — shared memory 접근 패턴
+- [ ] **Warp-level primitives**: shuffle, vote, ballot
+- [ ] **CUDA streams** + async copy (memcpy_async)
+- [ ] **CUDA Graph** — kernel launch overhead 제거
+- [ ] **Triton** — Python에서 CUDA 커널 작성 (NVIDIA 직접 추천)
+- [ ] **FlashAttention** Triton 버전 직접 구현 (SRAM-aware tiling)
+- [ ] **Fused kernel** 작성: Linear + GELU, RMSNorm + RoPE 등
+- [ ] cuBLAS / cuDNN vs custom kernel 벤치마크
+
+### 통신 / Network (멀티노드 학습 핵심)
+- [ ] **NVLink / NVSwitch** — intra-node GPU↔GPU (H100 900 GB/s)
+- [ ] **InfiniBand (IB)** 기초 — HCA, switch, routing
+- [ ] **RDMA** — kernel bypass, zero-copy 통신
+- [ ] **GPUDirect RDMA** — GPU 메모리 → IB → 다른 GPU 직접 (CPU 우회)
+- [ ] **NCCL** 내부 — ring vs tree vs **double-binary tree** allreduce 알고리즘
+- [ ] **NCCL collective**: AllReduce, AllGather, ReduceScatter, Broadcast
+- [ ] **Topology-aware** allreduce (NVLink intra + IB inter)
+- [ ] **Comm-compute overlap** — backward와 allreduce를 동시 실행
+- [ ] **Bandwidth/latency 측정**: `nccl-tests` 직접 돌리기
+- [ ] **EFA (AWS), Slingshot (HPE)** 등 IB 대체
+
+### Profiling / 측정 도구
+"느리다"를 증명하려면 도구 다룰 줄 알아야 함.
+- [ ] **nsight-systems** (`nsys`) — timeline 분석, kernel/comm/cpu overlap 시각화
+- [ ] **nsight-compute** (`ncu`) — kernel 단위 metric (occupancy, memory throughput)
+- [ ] **PyTorch Profiler** + Chrome trace
+- [ ] **`nvidia-smi` / `nvtop`** — 실시간 GPU 상태
+- [ ] **`nvprof` / DCGM** — production 모니터링
+- [ ] **Triton autotuner** — kernel 자동 튜닝
+- [ ] CUDA event 기반 wallclock 측정 vs `time.time()` 차이
 
 ### Reference
+- 📚 *Programming Massively Parallel Processors* (Kirk & Hwu) — CUDA 표준 교과서
+- 📚 *CUDA C++ Best Practices Guide* (NVIDIA 공식)
 - 📄 *Training Compute-Optimal LLMs* (Chinchilla)
-- 📄 *μTransfer* paper
-- 📄 *Sophia* / *Muon* / *Shampoo*
-- 📄 *Megatron-LM*, *DeepSpeed* 논문
-- 📦 PyTorch FSDP tutorial
+- 📄 *μTransfer* / *Sophia* / *Muon* / *Shampoo*
+- 📄 *Megatron-LM* / *DeepSpeed* / *FSDP* 논문
+- 📄 *FlashAttention* — 메모리 hierarchy를 모델 설계에 반영한 모범 사례
+- 📄 *Bringing HPC techniques to Deep Learning* (Baidu, allreduce 알고리즘 origin)
+- 📦 **NVIDIA `cutlass`** — CUDA 매트릭스 연산 reference
+- 📦 **`nccl-tests`** — collective bandwidth 측정 표준 도구
+- 📦 PyTorch FSDP tutorial, DeepSpeed tutorial
+- 📺 NVIDIA GTC 세션: GPU architecture deep dive (매년)
 
 ---
 
